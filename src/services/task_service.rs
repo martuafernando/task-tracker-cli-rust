@@ -26,7 +26,7 @@ impl<R: TaskRepository> TaskService for TaskServiceImpl<R> {
     fn add(&mut self, taskname: &String) -> Result<i8, Box<dyn Error>> {
         self
             .repository
-            .create(taskname, TaskStatus::InProgress)
+            .create(taskname, TaskStatus::Todo)
     }
     
     fn get(&self, status: Option<TaskStatus>) -> Result<Vec<Task>, Box<dyn Error>> {
