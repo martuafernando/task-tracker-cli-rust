@@ -7,6 +7,7 @@ use crate::repositories::task_repository::TaskRepository;
 pub trait TaskService {
     fn add(&mut self, taskname: &String) -> Result<i8, Box<dyn Error>>;
     fn get(&self, status: Option<TaskStatus>) -> Result<Vec<Task>, Box<dyn Error>>;
+    fn update_status(&mut self, id: i8, status: TaskStatus) -> Result<i8, Box<dyn Error>>;
 }
 
 pub struct TaskServiceImpl<R: TaskRepository> {
@@ -27,6 +28,13 @@ impl<R: TaskRepository> TaskService for TaskServiceImpl<R> {
     }
     
     fn get(&self, status: Option<TaskStatus>) -> Result<Vec<Task>, Box<dyn Error>> {
-        self.repository.get(status)
+        self.repository.get_all(status)
+    }
+    
+    fn update_status(&mut self, id: i8, status: TaskStatus) -> Result<i8, Box<dyn Error>> {
+        let mut task = self.repository.get_by_id(id)?;
+        task.status = status;
+
+        self.repository.update(id, &task)       
     }
 }

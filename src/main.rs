@@ -30,11 +30,12 @@ fn main() {
     match command.as_str() {
         "add" => add_task(&mut service, &args),
         "list" => list_task(&mut service, &args),
+        "mark-in-progress" => mark_in_progress(&mut service, &args),
+        "mark-done" => mark_done(&mut service, &args),
         _ => {
             println!("Unknown command: {}", command);
         }
     }
-    println!("{:?}", command);
 }
 
 fn add_task<T: TaskService>(service: &mut T, args: &Vec<String>) {
@@ -71,6 +72,48 @@ fn list_task<T: TaskService>(service: &mut T, args: &Vec<String>) {
             for task in tasks {
                 println!("{}", task.name);
             }
+        }
+        Err(e) => eprintln!("Error: {}", e),
+    }
+}
+
+fn mark_in_progress<T: TaskService>(service: &mut T, args: &Vec<String>) {
+    let task_id_str = args.get(2).unwrap_or_else(|| {
+        eprintln!("Error: Task ID is required for the 'mark-in-progress' command.");
+        exit(1);
+    });
+
+    let task_id = task_id_str.parse().unwrap_or_else(|_| {
+        eprintln!("Error: Task ID must be a valid number.");
+        exit(1);
+    });
+
+    let result = service.update_status(task_id, TaskStatus::InProgress);
+
+    match result {
+        Ok(id) => {
+            println!("Task updated successfully (ID: {})", id);
+        }
+        Err(e) => eprintln!("Error: {}", e),
+    }
+}
+
+fn mark_done<T: TaskService>(service: &mut T, args: &Vec<String>) {
+    let task_id_str = args.get(2).unwrap_or_else(|| {
+        eprintln!("Error: Task ID is required for the 'mark-in-progress' command.");
+        exit(1);
+    });
+
+    let task_id = task_id_str.parse().unwrap_or_else(|_| {
+        eprintln!("Error: Task ID must be a valid number.");
+        exit(1);
+    });
+
+    let result = service.update_status(task_id, TaskStatus::Done);
+
+    match result {
+        Ok(id) => {
+            println!("Task updated successfully (ID: {})", id);
         }
         Err(e) => eprintln!("Error: {}", e),
     }
