@@ -8,6 +8,7 @@ pub trait TaskRepository {
     fn get_all(&self, status: Option<TaskStatus>) -> Result<Vec<Task>, Box<dyn Error>>;
     fn get_by_id(&self, id: i8) -> Result<Task, Box<dyn Error>>;
     fn update(&mut self, id: i8, task: &Task) -> Result<i8, Box<dyn Error>>;
+    fn delete(&mut self, id: i8) -> Result<i8, Box<dyn Error>>;
 }
 
 pub struct TaskRepositoryImpl<S: Storage> {
@@ -77,6 +78,22 @@ impl<S: Storage> TaskRepository for TaskRepositoryImpl<S> {
             existing_task.name = task.name.clone();
             existing_task.status = task.status.clone();
         } else {
+            return Err(format!("Task with ID {} not found", id).into());
+        }
+
+        self.storage.save(&tasks)?;
+
+        Ok(id)
+    }
+
+    fn delete(&mut self, id: i8) -> Result<i8, Box<dyn Error>> {
+        let mut tasks = self.storage.load()?;
+
+        // Retain only tasks that do not match the given ID
+        let initial_len = tasks.len();
+        tasks.retain(|t| t.id != id);
+
+        if tasks.len() == initial_len {
             return Err(format!("Task with ID {} not found", id).into());
         }
 

@@ -33,6 +33,7 @@ fn main() {
         "mark-in-progress" => mark_in_progress(&mut service, &args),
         "mark-done" => mark_done(&mut service, &args),
         "update" => update(&mut service, &args),
+        "delete" => delete(&mut service, &args),
         _ => {
             println!("Unknown command: {}", command);
         }
@@ -141,6 +142,27 @@ fn update<T: TaskService>(service: &mut T, args: &Vec<String>) {
     match result {
         Ok(id) => {
             println!("Task updated successfully (ID: {})", id);
+        }
+        Err(e) => eprintln!("Error: {}", e),
+    }
+}
+
+fn delete<T: TaskService>(service: &mut T, args: &Vec<String>) {
+    let task_id_str = args.get(2).unwrap_or_else(|| {
+        eprintln!("Error: Task ID is required for the 'mark-in-progress' command.");
+        exit(1);
+    });
+
+    let task_id = task_id_str.parse().unwrap_or_else(|_| {
+        eprintln!("Error: Task ID must be a valid number.");
+        exit(1);
+    });
+
+    let result = service.delete(task_id);
+
+    match result {
+        Ok(id) => {
+            println!("Task deleted successfully (ID: {})", id);
         }
         Err(e) => eprintln!("Error: {}", e),
     }
