@@ -48,8 +48,7 @@ impl<R: TaskRepository> TaskService for TaskServiceImpl<R> {
     }
     
     fn delete(&mut self, id: i8) -> Result<i8, Box<dyn Error>> {
-        let mut task = self.repository.get_by_id(id)?;
-
+        self.repository.get_by_id(id)?;
         self.repository.delete(id)
     }
 }
