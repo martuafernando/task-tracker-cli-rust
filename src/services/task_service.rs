@@ -8,6 +8,7 @@ pub trait TaskService {
     fn add(&mut self, taskname: &String) -> Result<i8, Box<dyn Error>>;
     fn get(&self, status: Option<TaskStatus>) -> Result<Vec<Task>, Box<dyn Error>>;
     fn update_status(&mut self, id: i8, status: TaskStatus) -> Result<i8, Box<dyn Error>>;
+    fn update_name(&mut self, id: i8, name: &String) -> Result<i8, Box<dyn Error>>;
 }
 
 pub struct TaskServiceImpl<R: TaskRepository> {
@@ -36,5 +37,12 @@ impl<R: TaskRepository> TaskService for TaskServiceImpl<R> {
         task.status = status;
 
         self.repository.update(id, &task)       
+    }
+    
+    fn update_name(&mut self, id: i8, name: &String) -> Result<i8, Box<dyn Error>> {
+        let mut task = self.repository.get_by_id(id)?;
+        task.name = name.to_string();
+
+        self.repository.update(id, &task)
     }
 }
