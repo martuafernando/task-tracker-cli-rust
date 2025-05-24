@@ -5,12 +5,7 @@ use std::{
     io::{BufReader, BufWriter, ErrorKind},
 };
 
-use crate::models::task::Task;
-
-pub trait Storage {
-    fn save(&self, tasks: &[Task]) -> Result<(), Box<dyn Error>>;
-    fn load(&self) -> Result<Vec<Task>, Box<dyn Error>>;
-}
+use crate::domains::{common::storage::Storage, task::model::Task};
 
 pub struct FileStorage {
     file_path: String,
@@ -42,7 +37,7 @@ impl Storage for FileStorage {
             Err(e) if e.kind() == ErrorKind::NotFound => {
                 // File doesn't exist → treat as empty
                 return Ok(Vec::new());
-            },
+            }
             Err(e) => return Err(Box::new(e)),
         };
 
@@ -52,7 +47,7 @@ impl Storage for FileStorage {
             Err(e) if e.is_eof() => {
                 // File is empty → treat as empty list
                 Ok(Vec::new())
-            },
+            }
             Err(e) => Err(Box::new(e)),
         }
     }

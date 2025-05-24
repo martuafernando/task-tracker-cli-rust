@@ -1,5 +1,5 @@
-use super::task_status::TaskStatus;
-use serde::{Serialize, Deserialize};
+use super::status::TaskStatus;
+use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Serialize, Deserialize)]
 pub struct Task {
