@@ -95,3 +95,69 @@ impl<S: Storage> TaskRepository for TaskRepositoryImpl<S> {
         Ok(id)
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use crate::domains::{common::storage::MockStorage};
+
+    use super::*;
+
+    #[test]
+    fn test_get_new_id() {
+        // Arrange
+        let storage = MockStorage::new();
+        let task_repository = TaskRepositoryImpl {
+            storage
+        };
+        let tasks = [
+            TaskEntity {
+                id: 1,
+                name: "test".to_string(),
+                status: TaskStatus::Done,
+            },
+            TaskEntity {
+                id: 3,
+                name: "test".to_string(),
+                status: TaskStatus::Done,
+            },
+            TaskEntity {
+                id: 2,
+                name: "test".to_string(),
+                status: TaskStatus::Done,
+            },
+        ];
+
+        // Act
+        let new_id = task_repository.get_new_id(&tasks);
+
+        // Assert
+        assert_eq!(new_id, 4, "TaskRepositoryImpl get_new_id should return the increment from the biggest id")
+    }
+
+    #[test]
+    fn test_create() {
+        // Arrange
+        let mut mock_storage = MockStorage::new();
+        mock_storage
+            .expect_load()
+            .returning(|| Ok(vec![]));
+        
+        mock_storage
+            .expect_save()
+            .returning(|_| Ok(()));
+        
+        let mut task_repository = TaskRepositoryImpl {
+            storage: mock_storage
+        };
+        
+        
+        let task_name = "testing".to_string();
+        let task_status = TaskStatus::Done;
+
+        // Act
+        let new_id = task_repository.create(&task_name, task_status);
+
+        // Assert
+        assert_eq!(new_id.unwrap(), 1);
+    }
+}

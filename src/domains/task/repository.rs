@@ -1,7 +1,10 @@
+use mockall::*;
+use mockall::predicate::*;
 use std::error::Error;
 
 use super::entity::{TaskEntity, TaskStatus};
 
+#[automock]
 pub trait TaskRepository {
     fn create(&mut self, name: &String, status: TaskStatus) -> Result<i8, Box<dyn Error>>;
     fn get_all(&self, status: Option<TaskStatus>) -> Result<Vec<TaskEntity>, Box<dyn Error>>;

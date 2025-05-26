@@ -14,6 +14,7 @@ pub enum TaskStatus {
     Done,
 }
 
+#[cfg(test)]
 mod tests {
     use super::*;
 
