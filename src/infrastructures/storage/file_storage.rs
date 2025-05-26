@@ -5,7 +5,7 @@ use std::{
     io::{BufReader, BufWriter, ErrorKind},
 };
 
-use crate::domains::{common::storage::Storage, task::model::Task};
+use crate::domains::{common::storage::Storage, task::entity::TaskEntity};
 
 pub struct FileStorage {
     file_path: String,
@@ -18,7 +18,7 @@ impl FileStorage {
 }
 
 impl Storage for FileStorage {
-    fn save(&self, tasks: &[Task]) -> Result<(), Box<dyn Error>> {
+    fn save(&self, tasks: &[TaskEntity]) -> Result<(), Box<dyn Error>> {
         let file = OpenOptions::new()
             .write(true)
             .create(true)
@@ -31,7 +31,7 @@ impl Storage for FileStorage {
         Ok(())
     }
 
-    fn load(&self) -> Result<Vec<Task>, Box<dyn Error>> {
+    fn load(&self) -> Result<Vec<TaskEntity>, Box<dyn Error>> {
         let file = match File::open(&self.file_path) {
             Ok(f) => f,
             Err(e) if e.kind() == ErrorKind::NotFound => {

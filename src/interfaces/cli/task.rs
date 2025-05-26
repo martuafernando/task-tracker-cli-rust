@@ -1,6 +1,6 @@
 use std::process::exit;
 
-use crate::domains::task::{service::TaskService, status::TaskStatus};
+use crate::domains::task::{entity::TaskStatus, service::TaskService};
 
 pub(crate) fn add_task<T: TaskService>(service: &mut T, args: &Vec<String>) {
     let task_name = args.get(2).unwrap_or_else(|| {

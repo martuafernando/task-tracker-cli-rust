@@ -1,9 +1,8 @@
 use std::error::Error;
 
 use crate::domains::common::storage::Storage;
-use crate::domains::task::model::Task;
+use crate::domains::task::entity::{TaskEntity, TaskStatus};
 use crate::domains::task::repository::TaskRepository;
-use crate::domains::task::status::TaskStatus;
 
 pub struct TaskRepositoryImpl<S: Storage> {
     pub(crate) storage: S,
@@ -14,7 +13,7 @@ impl<S: Storage> TaskRepositoryImpl<S> {
         Self { storage }
     }
 
-    fn get_new_id(&self, tasks: &[Task]) -> i8 {
+    fn get_new_id(&self, tasks: &[TaskEntity]) -> i8 {
         tasks
             .iter()
             .max_by_key(|taks| taks.id)
@@ -28,7 +27,7 @@ impl<S: Storage> TaskRepository for TaskRepositoryImpl<S> {
         let mut data = self.storage.load()?;
         let new_id = self.get_new_id(&data);
 
-        let task = Task {
+        let task = TaskEntity {
             id: new_id,
             name: name.clone(),
             status: status,
@@ -42,7 +41,7 @@ impl<S: Storage> TaskRepository for TaskRepositoryImpl<S> {
         Ok(task_id)
     }
 
-    fn get_all(&self, status: Option<TaskStatus>) -> Result<Vec<Task>, Box<dyn Error>> {
+    fn get_all(&self, status: Option<TaskStatus>) -> Result<Vec<TaskEntity>, Box<dyn Error>> {
         let tasks = self.storage.load()?;
 
         match status {
@@ -54,7 +53,7 @@ impl<S: Storage> TaskRepository for TaskRepositoryImpl<S> {
         }
     }
 
-    fn get_by_id(&self, id: i8) -> Result<Task, Box<dyn Error>> {
+    fn get_by_id(&self, id: i8) -> Result<TaskEntity, Box<dyn Error>> {
         let tasks = self.storage.load()?;
 
         let result = tasks.iter().find(|tasks| tasks.id == id);
@@ -65,7 +64,7 @@ impl<S: Storage> TaskRepository for TaskRepositoryImpl<S> {
         }
     }
 
-    fn update(&mut self, id: i8, task: &Task) -> Result<i8, Box<dyn Error>> {
+    fn update(&mut self, id: i8, task: &TaskEntity) -> Result<i8, Box<dyn Error>> {
         let mut tasks = self.storage.load()?;
 
         if let Some(existing_task) = tasks.iter_mut().find(|t| t.id == id) {

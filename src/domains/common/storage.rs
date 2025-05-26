@@ -1,8 +1,8 @@
 use std::error::Error;
 
-use crate::domains::task::model::Task;
+use crate::domains::task::entity::TaskEntity;
 
 pub trait Storage {
-    fn save(&self, tasks: &[Task]) -> Result<(), Box<dyn Error>>;
-    fn load(&self) -> Result<Vec<Task>, Box<dyn Error>>;
+    fn save(&self, tasks: &[TaskEntity]) -> Result<(), Box<dyn Error>>;
+    fn load(&self) -> Result<Vec<TaskEntity>, Box<dyn Error>>;
 }

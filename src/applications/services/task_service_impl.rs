@@ -1,9 +1,8 @@
 use std::error::Error;
 
-use crate::domains::task::model::Task;
+use crate::domains::task::entity::{TaskEntity, TaskStatus};
 use crate::domains::task::repository::TaskRepository;
 use crate::domains::task::service::TaskService;
-use crate::domains::task::status::TaskStatus;
 
 pub struct TaskServiceImpl<R: TaskRepository> {
     repository: R,
@@ -20,7 +19,7 @@ impl<R: TaskRepository> TaskService for TaskServiceImpl<R> {
         self.repository.create(taskname, TaskStatus::Todo)
     }
 
-    fn get(&self, status: Option<TaskStatus>) -> Result<Vec<Task>, Box<dyn Error>> {
+    fn get(&self, status: Option<TaskStatus>) -> Result<Vec<TaskEntity>, Box<dyn Error>> {
         self.repository.get_all(status)
     }
 
